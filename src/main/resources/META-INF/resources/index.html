@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>World Greeter</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/patternfly/3.24.0/css/patternfly.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/patternfly/3.24.0/css/patternfly-additions.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" defer></script>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Welcome to Reactive Programming </h2>
+      <div id="greeter" class="row">
+      </div>
+    </div>
+  </body>
+  <script>
+    var source = new EventSource("/hello/stream");
+    source.onmessage = function(event) {
+      console.log(event.data);
+      var greetings = $('<p class="col-md-12"> <strong><span id="content">'+event.data+'</span></strong></p>');
+       greetings.appendTo("#greeter");
+    };
+  </script>
+</html>
