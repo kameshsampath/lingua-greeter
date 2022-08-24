@@ -7,8 +7,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.reactivestreams.Publisher;
-import io.smallrye.reactive.messaging.annotations.Stream;
+
+import io.smallrye.mutiny.Multi;
 
 @Path("/hello")
 public class HelloResource {
@@ -16,9 +19,8 @@ public class HelloResource {
     @Inject
     HelloService helloService;
 
-    @Inject
-    @Stream("translated-greetings-stream")
-    Publisher<String> linguaGreetings;
+    @Channel("translated-greetings-stream")
+    Multi<String> linguaGreetings;
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)

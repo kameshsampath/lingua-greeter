@@ -1,15 +1,15 @@
 package org.acme.quarkus.sample;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.enterprise.context.ApplicationScoped;
 import com.google.cloud.translate.TranslateOptions;
 import com.google.cloud.translate.Translation;
 import com.google.cloud.translate.Translate.TranslateOption;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
-import io.reactivex.Flowable;
+import io.smallrye.mutiny.Multi;
 
 /**
  * LinguaGreeterService
@@ -24,8 +24,8 @@ public class LinguaGreeterService {
     List<String> targetLangCodes;
 
     @Outgoing("translated-greetings")
-    public Flowable<String> greetings(){
-        return Flowable.interval(5, TimeUnit.SECONDS)
+    public Multi<String> greetings(){
+        return Multi.createFrom().ticks().every(Duration.ofSeconds(5))
         .map(tick -> {
             String targetLangCode = targetLangCodes.get(0);
             Collections.rotate(targetLangCodes, 1);

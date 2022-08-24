@@ -32,7 +32,7 @@ spec:
          - name: GOOGLE_APPLICATION_CREDENTIALS
            value: /tmp/google-cloud-credentials.json    
          - name: KAFKA_BOOTSTRAP_SERVERS
-           value: my-cluster-kafka-bootstrap.kafka:9092    
+           value: my-cluster-kafka-bootstrap.kafka:9092  
         resources:
           limits:
             memory: "128Mi"
