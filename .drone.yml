@@ -17,9 +17,11 @@ steps:
     commands:
       - apk update
       - apk add curl bash
-      - until [ "$(curl -o /dev/null -s -w '%{http_code}' http://nexus.infra:30081/repository/maven-public/ )" -eq 200 ]; do sleep 5;echo "."; done
+      - until [ "$(curl -o /dev/null -s -w '%{http_code}' $MAVEN_MIRROR_URL )" -eq 200 ]; do sleep 5;echo "."; done
     environment:
-      MAVEN_MIRROR_URL: "http://nexus.infra:8081/repository/maven-public/"
+      MAVEN_MIRROR_URL:
+        from_secret: maven_mirror_url
+
   # Step 2
   - name: java-build
     image: kameshsampath/drone-java-maven-plugin:v1.0.3
