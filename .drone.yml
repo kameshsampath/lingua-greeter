@@ -1,0 +1,56 @@
+---
+kind: pipeline
+type: kubernetes
+name: default
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  # Step 1
+  - name: ensure nexus is available
+    image: alpine
+    pull: if-not-exists
+    commands:
+      - apk update
+      - apk add curl bash
+      - until [ "$(curl -o /dev/null -s -w '%{http_code}' $MAVEN_MIRROR_URL )" -eq 200 ]; do sleep 5;echo "."; done
+    environment:
+       MAVEN_MIRROR_URL: "http://nexus.infra:8081/repository/maven-public/"
+  # Step 2
+  - name: java-build
+    image: kameshsampath/drone-java-maven-plugin:v1.0.3
+    pull: if-not-exists
+    settings:
+      maven_mirror_url:
+        from_secret: maven_mirror_url
+      goals:
+        - -DskipTests
+        - clean
+        - install
+  # Step 3
+  - name: publish
+    image: plugins/docker:20.13
+    pull: if-not-exists
+    settings:
+      tags: "latest" 
+      dockerfile: Dockerfile
+      insecure: true
+      # on instruqt platform check the mtu value of cni nic and
+      # ensure this value matches that 
+      mtu: 1410
+      username:
+        from_secret: image_registry_user
+      password:
+        from_secret: image_registry_password
+      registry:
+        from_secret: image_registry
+      repo:
+        from_secret: destination_image
+  
+
+# Trigger only main
+trigger:
+  branch:
+  - main
