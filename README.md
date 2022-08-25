@@ -69,7 +69,15 @@ Run the following script to add the secrets to the Drone repo `${LINGUA_GREETER_
 
 ## Testing with Kubernetes
 
-Refer to the <https://github.com/kameshsampath/lingua-greeter-gitops> for manifests and cluster setup to test the application with local kubernetes clusters like [k3s](https://k3s.io)
+Refer to the [Lingua Greeter GitOps][https://github.com/kameshsampath/lingua-greeter-gitops] for cluster setup to test the application with local kubernetes clusters like [k3s](https://k3s.io) using GitOps.
+
+### Trigger CI
+
+Any pushes to repository will trigger a drone build. Here is a example to trigger a build without commit:
+
+```shell
+git commit --allow-empty -m "Test Trigger" -m "Test Trigger"
+```
 
 ## Testing Locally
 
