@@ -17,6 +17,9 @@ import io.smallrye.mutiny.Multi;
 @ApplicationScoped
 public class LinguaGreeterService {
 
+    @ConfigProperty(name = "lingua.greeter.message",defaultValue = "Welcome to Reactive Programming")
+    String greetingMessage;
+    
     @ConfigProperty(name="google.api.translate.srcLangCode")
     String srcLangCode;
 
@@ -39,7 +42,7 @@ public class LinguaGreeterService {
 
         Translation translator =  translateOptions
         .getService()
-        .translate("Welcome to Reactive Programming",
+        .translate(greetingMessage,
         TranslateOption.sourceLanguage(srcLangCode),
         TranslateOption.targetLanguage(targetLangCode));
         return translator.getTranslatedText();
