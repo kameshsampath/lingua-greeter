@@ -11,7 +11,8 @@ The application uses [Google Cloud Translation API](https://cloud.google.com/tra
 - [kustomize](https://kustomize.io/)
 - [Drone CLI](https://docs.drone.io/cli/install/)
 - [k3d](https://k3d.io)
-- [direnv](https://direnv.net)(optional)
+- [yq](https://mikefarah.gitbook.io/yq/)
+- [direnv](https://direnv.net)
   
 ## Drone Configuration
 
@@ -36,7 +37,7 @@ drone info
 Now activate the `lingua-greeter` in Drone,
 
 ```shell
-drone repo activate "${LINGUA_GREETER_GIT_REPO}"
+drone repo enable "${LINGUA_GREETER_GIT_REPO}"
 ```
 
 ### Add Secrets to Drone Repository
@@ -71,12 +72,32 @@ Run the following script to add the secrets to the Drone repo `${LINGUA_GREETER_
 
 Refer to the [Lingua Greeter GitOps][https://github.com/kameshsampath/lingua-greeter-gitops] for cluster setup to test the application with local kubernetes clusters like [k3s](https://k3s.io) using GitOps.
 
+### Update .drone.yml to resolve hostnames
+
+Get Gitea `gitea-http` service `Cluster IP`,
+
+```shell
+export GITEA_HTTP_CLUSTER_IP=$(kubectl get -n default svc gitea-http -ojsonpath='{.spec.clusterIP}')
+```
+
+Update the `.drone.yml`,
+
+```shell
+yq -i '(.. | select(tag == "!!str")) |= envsubst' .drone.yml 
+```
+
+```shell
+git commit  -m "Add host aliases" .drone.yml
+git push origin main
+```
+
 ### Trigger CI
 
 Any pushes to repository will trigger a drone build. Here is a example to trigger a build without commit:
 
 ```shell
 git commit --allow-empty -m "Test Trigger" -m "Test Trigger"
+git push origin main
 ```
 
 ## Testing Locally
