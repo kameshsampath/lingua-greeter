@@ -70,11 +70,16 @@ Run the following script to add the secrets to the Drone repo `${LINGUA_GREETER_
 
 ## Testing with Kubernetes
 
-Refer to the [Lingua Greeter GitOps][https://github.com/kameshsampath/lingua-greeter-gitops] for cluster setup to test the application with local kubernetes clusters like [k3s](https://k3s.io) using GitOps.
+### Google Application Credentials Secret
+
+```shell
+kubectl create ns demo-apps
+kubectl create secret generic -n demo-apps google-cloud-creds --from-file="google-cloud-credentials.json=${GOOGLE_APPLICATION_CREDENTIALS}"
+```
 
 ### Update .drone.yml to resolve hostnames
 
-Get Gitea `gitea-http` service `Cluster IP`,
+Get gitea `gitea-http` service `Cluster IP`,
 
 ```shell
 export GITEA_HTTP_CLUSTER_IP=$(kubectl get -n default svc gitea-http -ojsonpath='{.spec.clusterIP}')
@@ -90,6 +95,29 @@ yq -i '(.. | select(tag == "!!str")) |= envsubst' .drone.yml
 git commit  -m "Add host aliases" .drone.yml
 git push origin main
 ```
+
+### CI/CD
+
+Create SA,
+
+```shell
+kubectl apply -k k8s/pipeline
+```
+
+Make `drone-runner-kube` use the right SA who can create resources in the cluster,
+
+```shell
+kubectl patch configmap/drone-runner-kube  \
+  -n drone \
+    --type=json \
+        --patch-file=k8s/patches/drone-kube-runner-update.yaml
+```
+
+Commit and push the code to trigger the CI/CD.
+
+### GitOps
+
+Refer to the [Lingua Greeter GitOps][https://github.com/kameshsampath/lingua-greeter-gitops] for cluster setup to test the application with local kubernetes clusters like [k3s](https://k3s.io) using GitOps.
 
 ### Trigger CI
 
@@ -116,3 +144,11 @@ java -jar target/quarkus-app/quarkus-run.jar
 ```
 
 Access the application using <http://localhost:8080/>
+
+## Clean up
+
+```shell
+helm delete my-kafka
+kubectl delete -k k8s/app
+kubectl delete -k k8s/pipeline
+```

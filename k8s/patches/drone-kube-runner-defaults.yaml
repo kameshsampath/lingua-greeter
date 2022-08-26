@@ -1,0 +1,5 @@
+- op: replace
+  path: /data/DRONE_NAMESPACE_DEFAULT
+  value: default
+- op: remove
+  path: /data/DRONE_SERVICE_ACCOUNT_DEFAULT

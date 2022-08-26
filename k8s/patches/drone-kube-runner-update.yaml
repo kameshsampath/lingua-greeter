@@ -1,0 +1,6 @@
+- op: replace
+  path: /data/DRONE_NAMESPACE_DEFAULT
+  value: drone
+- op: add
+  path: /data/DRONE_SERVICE_ACCOUNT_DEFAULT
+  value: pipeline
