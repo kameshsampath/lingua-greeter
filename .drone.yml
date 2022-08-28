@@ -51,15 +51,15 @@ steps:
       repo:
         from_secret: destination_image
   # Step 4
-  - name: deploy to k8s
-    image: kameshsampath/kube-dev-tools
-    pull: if-not-exists
-    commands:
-      - helm repo add bitnami https://charts.bitnami.com/bitnami
-      - helm repo udpate
-      - helm install my-kafka bitnami/kafka -n my-apps
-      - kubectl apply -k k8s/app
-      - kubectl rollout status deploy/lingua-greeter -n my-apps --timeout=30s
+  # - name: deploy to k8s
+  #   image: kameshsampath/kube-dev-tools
+  #   pull: if-not-exists
+  #   commands:
+  #     - helm repo add bitnami https://charts.bitnami.com/bitnami
+  #     - helm repo udpate
+  #     - helm install my-kafka bitnami/kafka -n my-apps
+  #     - kubectl apply -k k8s/app
+  #     - kubectl rollout status deploy/lingua-greeter -n my-apps --timeout=30s
 ##
 # IMPORTANT UPDATE
 # export GITEA_HTTP_CLUSTER_IP=$(kubectl get -n default svc gitea-http -ojsonpath='{.spec.clusterIP}')
