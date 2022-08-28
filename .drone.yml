@@ -9,6 +9,7 @@ platform:
 trigger:
   branch:
     - main
+    - demo
 steps:
   # Step 1
   - name: ensure nexus is available
