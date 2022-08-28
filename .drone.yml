@@ -41,6 +41,7 @@ steps:
       tags: "latest"
       dockerfile: Dockerfile
       insecure: true
+      mtu: 1410
       username:
         from_secret: image_registry_user
       password:
