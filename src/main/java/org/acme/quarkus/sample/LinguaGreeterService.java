@@ -42,7 +42,7 @@ public class LinguaGreeterService {
 
         Translation translator =  translateOptions
         .getService()
-        .translate(greetingMessage,
+        .translate("Hello Kolkata!",
         TranslateOption.sourceLanguage(srcLangCode),
         TranslateOption.targetLanguage(targetLangCode));
         return translator.getTranslatedText();
