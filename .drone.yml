@@ -52,7 +52,7 @@ steps:
         from_secret: destination_image
   # Step 4
   - name: deploy to k8s
-    image: plugins/docker:20.13
+    image: kameshsampath/kube-dev-tools
     pull: if-not-exists
     commands:
       - helm repo add bitnami https://charts.bitnami.com/bitnami
