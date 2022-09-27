@@ -65,11 +65,12 @@ steps:
     commands:
       - mkdir -p /app/.kube
       - echo -n "$KUBECONFIG_CONTENT" | base64 -d - | yq . - > /app/.kube/config
-      - helm repo add bitnami https://charts.bitnami.com/bitnami
-      - helm repo update
-      - helm install my-kafka bitnami/kafka -n my-apps
-      - kubectl apply -k k8s/app
-      - kubectl rollout status deploy/lingua-greeter -n my-apps --timeout=30s
+      - cat /app/.kube/config
+      # - helm repo add bitnami https://charts.bitnami.com/bitnami
+      # - helm repo update
+      # - helm install my-kafka bitnami/kafka -n my-apps
+      # - kubectl apply -k k8s/app
+      # - kubectl rollout status deploy/lingua-greeter -n my-apps --timeout=30s
     environment:
       KUBECONFIG_CONTENT:
         from_secret: kubeconfig_content
