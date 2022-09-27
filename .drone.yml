@@ -17,7 +17,7 @@ steps:
     image: alpine/git
     pull: if-not-exists
     commands:
-      - git clone http://gitea-http.default.svc.cluster.local:30950/lingua-greeter/drag-stack.git .
+      - git clone http://gitea-http.default.svc.cluster.local:30950/user-01/lingua-greeter/drag-stack.git .
       - git checkout $DRONE_COMMIT
   # Step 2
   - name: ensure nexus is available
