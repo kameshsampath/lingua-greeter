@@ -49,7 +49,7 @@ steps:
       tags: "latest"
       dockerfile: Dockerfile
       insecure: true
-      mtu: 1500
+      mtu: 1400
       username:
         from_secret: image_registry_user
       password:
