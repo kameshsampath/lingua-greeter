@@ -13,7 +13,7 @@ clone:
 
 steps:
   # Step 1
-  - name: clone sourcess
+  - name: clone sources
     image: alpine/git
     pull: if-not-exists
     commands:
