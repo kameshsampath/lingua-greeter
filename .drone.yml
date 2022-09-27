@@ -63,6 +63,7 @@ steps:
     image: kameshsampath/kube-dev-tools:v0.0.8
     pull: if-not-exists
     commands:
+      - unset KUBECONFIG
       - helm repo add bitnami https://charts.bitnami.com/bitnami
       - helm repo update
       - helm install my-kafka bitnami/kafka -n my-apps
