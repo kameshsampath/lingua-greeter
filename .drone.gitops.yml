@@ -1,0 +1,60 @@
+---
+kind: pipeline
+type: docker
+name: default
+platform:
+  os: linux
+  arch: arm64
+trigger:
+  branch:
+    - demo
+clone:
+  disable: true
+
+steps:
+  # Step 1
+  - name: clone sources
+    image: alpine/git
+    pull: if-not-exists
+    commands:
+      - git clone http://gitea-http.default.svc.cluster.local:30950/user-01/lingua-greeter.git .
+      - git checkout $DRONE_COMMIT
+  # Step 2
+  - name: ensure nexus is available
+    image: alpine
+    pull: if-not-exists
+    commands:
+      - apk update
+      - apk add curl bash
+      - until [ "$(curl -o /dev/null -s -w '%{http_code}' http://nexus.infra:8081/repository/maven-public/ )" -eq 200 ]; do sleep 5;echo "."; done
+    environment:
+      MAVEN_MIRROR_URL:
+        from_secret: maven_mirror_url
+  # Step 3
+  - name: java-build
+    image: kameshsampath/drone-java-maven-plugin:v1.0.3
+    pull: if-not-exists
+    settings:
+      maven_mirror_url:
+        from_secret: maven_mirror_url
+      goals:
+        - -DskipTests
+        - clean
+        - install
+  # Step 4
+  - name: publish
+    image: plugins/docker:20.13
+    pull: if-not-exists
+    settings:
+      tags: "latest"
+      dockerfile: Dockerfile
+      insecure: true
+      mtu: 1400
+      username:
+        from_secret: image_registry_user
+      password:
+        from_secret: image_registry_password
+      registry:
+        from_secret: image_registry
+      repo:
+        from_secret: destination_image
