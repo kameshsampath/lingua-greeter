@@ -66,6 +66,7 @@ steps:
       - mkdir -p /app/.kube
       - echo -n "$KUBECONFIG_CONTENT" | base64 -d -w0 | yq . - > /app/.kube/config
       - echo -n "$GOOGLE_APPLICATION_CREDENTIALS" | base64 -d -w0 | jq . > /app/sa.json
+      - cat /app/sa.json
       - chmod 0700 /app/.kube/config /app/sa.json
       - cat /app/.kube/config
       - export KUBECONFIG=/app/.kube/config
