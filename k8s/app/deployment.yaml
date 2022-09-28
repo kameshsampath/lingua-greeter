@@ -25,7 +25,10 @@ spec:
             value: my-kafka.my-apps:9092
         resources:
           limits:
-            memory: "128Mi"
+            memory: "1024Mi"
+            cpu: "1000m"
+          requests:
+            memory: "512Mi"
             cpu: "500m"
         ports:
         - name: http
