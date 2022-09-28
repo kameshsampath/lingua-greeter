@@ -18,6 +18,7 @@ spec:
       containers:
       - name: lingua-greeter
         image: nexus.infra.svc.cluster.local/example/lingua-greeter
+        imagePullPolicy: Always
         env:
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /credentials/google-cloud-credentials.json    
