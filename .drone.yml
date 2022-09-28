@@ -64,7 +64,8 @@ steps:
     pull: if-not-exists
     commands:
       - mkdir -p /app/.kube
-      - echo -n "$KUBECONFIG_CONTENT" | base64 -d - | yq . - > /app/.kube/config
+      - echo -n "$KUBECONFIG_CONTENT" | base64 -d -w0 | yq . - > /app/.kube/config
+      - chmod 0700 /app/.kube/config
       - cat /app/.kube/config
       - export KUBECONFIG=/app/.kube/config
       - helm repo add bitnami https://charts.bitnami.com/bitnami
