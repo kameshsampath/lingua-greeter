@@ -11,7 +11,3 @@ drone secret add --name image_registry --data "${REGISTRY_NAME}" "${LINGUA_GREET
 drone secret add --name image_registry_user --data "${IMAGE_REGISTRY_USER}" "${LINGUA_GREETER_GIT_REPO}"
 
 drone secret add --name image_registry_password --data "${IMAGE_REGISTRY_PASSWORD}" "${LINGUA_GREETER_GIT_REPO}"
-
-KUBE_CONFIG_CONTENT="$(k3d kubeconfig get "$K3D_CLUSTER_NAME")"
-KUBE_CONFIG_CONTENT=$(echo -n "$KUBE_CONFIG_CONTENT" | sed '1d' - | base64 -)
-drone secret add --name kubeconfig_content --data "'$KUBE_CONFIG_CONTENT'" "${LINGUA_GREETER_GIT_REPO}"
