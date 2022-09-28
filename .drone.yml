@@ -59,45 +59,45 @@ steps:
       repo:
         from_secret: destination_image
   # Step 4
-  # - name: deploy to k8s
-  #   image: kameshsampath/kube-dev-tools:v0.0.8
-  #   pull: if-not-exists
-  #   commands:
-  #     - mkdir -p /app/.kube
-  #     - echo -n "$KUBECONFIG_CONTENT" | base64 -d -w0 | yq . - > /app/.kube/config
-  #     - echo -n "$GOOGLE_APPLICATION_CREDENTIALS" | base64 -d -w0 | jq . > /app/sa.json
-  #     #  - cat /app/sa.json
-  #     - chmod 0700 /app/.kube/config /app/sa.json
-  #     # - cat /app/.kube/config
-  #     - export KUBECONFIG=/app/.kube/config
-  #     - kubectl create ns my-apps || true
-  #     - kubectl create secret generic -n my-apps google-cloud-creds --from-file="google-cloud-credentials.json=/app/sa.json" || true
-  #     - helm repo add bitnami https://charts.bitnami.com/bitnami
-  #     - helm repo update
-  #     - helm upgrade --install my-kafka bitnami/kafka -n my-apps
-  #     - kubectl apply -k k8s/app
-  #     - kubectl rollout status deploy/lingua-greeter -n my-apps --timeout=30s
-  #   environment:
-  #     KUBECONFIG_CONTENT:
-  #       from_secret: kubeconfig_content
-  #     GOOGLE_APPLICATION_CREDENTIALS:
-  #       from_secret: google_application_credentials
-  # Step 4(GitOps)
-  - name: prepare for gitops
+  - name: deploy to k8s
     image: kameshsampath/kube-dev-tools:v0.0.8
     pull: if-not-exists
     commands:
       - mkdir -p /app/.kube
       - echo -n "$KUBECONFIG_CONTENT" | base64 -d -w0 | yq . - > /app/.kube/config
       - echo -n "$GOOGLE_APPLICATION_CREDENTIALS" | base64 -d -w0 | jq . > /app/sa.json
-      # - cat /app/sa.json
+      #  - cat /app/sa.json
       - chmod 0700 /app/.kube/config /app/sa.json
       # - cat /app/.kube/config
       - export KUBECONFIG=/app/.kube/config
-      - kubectl create ns demo-apps || true
-      - kubectl create secret generic -n demo-apps google-cloud-creds --from-file="google-cloud-credentials.json=/app/sa.json" || true
+      - kubectl create ns my-apps || true
+      - kubectl create secret generic -n my-apps google-cloud-creds --from-file="google-cloud-credentials.json=/app/sa.json" || true
+      - helm repo add bitnami https://charts.bitnami.com/bitnami
+      - helm repo update
+      - helm upgrade --install my-kafka bitnami/kafka -n my-apps
+      - kubectl apply -k k8s/app
+      - kubectl rollout status deploy/lingua-greeter -n my-apps --timeout=30s
     environment:
       KUBECONFIG_CONTENT:
         from_secret: kubeconfig_content
       GOOGLE_APPLICATION_CREDENTIALS:
         from_secret: google_application_credentials
+  # Step 4(GitOps)
+  # - name: prepare for gitops
+  #   image: kameshsampath/kube-dev-tools:v0.0.8
+  #   pull: if-not-exists
+  #   commands:
+  #     - mkdir -p /app/.kube
+  #     - echo -n "$KUBECONFIG_CONTENT" | base64 -d -w0 | yq . - > /app/.kube/config
+  #     - echo -n "$GOOGLE_APPLICATION_CREDENTIALS" | base64 -d -w0 | jq . > /app/sa.json
+  #     # - cat /app/sa.json
+  #     - chmod 0700 /app/.kube/config /app/sa.json
+  #     # - cat /app/.kube/config
+  #     - export KUBECONFIG=/app/.kube/config
+  #     - kubectl create ns demo-apps || true
+  #     - kubectl create secret generic -n demo-apps google-cloud-creds --from-file="google-cloud-credentials.json=/app/sa.json" || true
+  #   environment:
+  #     KUBECONFIG_CONTENT:
+  #       from_secret: kubeconfig_content
+  #     GOOGLE_APPLICATION_CREDENTIALS:
+  #       from_secret: google_application_credentials
