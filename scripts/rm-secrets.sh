@@ -13,3 +13,4 @@ drone secret rm --name image_registry_user "${LINGUA_GREETER_GIT_REPO}"
 drone secret update --name image_registry_password "${LINGUA_GREETER_GIT_REPO}"
 
 drone secret rm --name kubeconfig_content user-01/lingua-greeter
+drone secret rm --name google_application_credentials

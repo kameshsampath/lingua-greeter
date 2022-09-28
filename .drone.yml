@@ -65,9 +65,12 @@ steps:
     commands:
       - mkdir -p /app/.kube
       - echo -n "$KUBECONFIG_CONTENT" | base64 -d -w0 | yq . - > /app/.kube/config
-      - chmod 0700 /app/.kube/config
+      - echo -n "$GOOGLE_APPLICATION_CREDENTIALS" | base64 -d -w0 | jq . > /app/sa.json
+      - chmod 0700 /app/.kube/config /app/sa.json
       - cat /app/.kube/config
       - export KUBECONFIG=/app/.kube/config
+      - kubectl create ns my-apps
+      - kubectl create secret generic -n my-apps google-cloud-creds --from-file="google-cloud-credentials.json=/app/sa.json"
       - helm repo add bitnami https://charts.bitnami.com/bitnami
       - helm repo update
       - helm install my-kafka bitnami/kafka -n my-apps
@@ -76,3 +79,5 @@ steps:
     environment:
       KUBECONFIG_CONTENT:
         from_secret: kubeconfig_content
+      GOOGLE_APPLICATION_CREDENTIALS:
+        from_secret: google_application_credentials
