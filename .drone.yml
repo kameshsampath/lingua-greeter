@@ -1,1 +1,83 @@
-.drone.deploy.yml
+---
+kind: pipeline
+type: docker
+name: default
+platform:
+  os: linux
+  arch: arm64
+trigger:
+  branch:
+    - main
+clone:
+  disable: true
+
+steps:
+  # Step 1
+  - name: clone sources
+    image: alpine/git
+    pull: if-not-exists
+    commands:
+      - git clone http://gitea-http.default.svc.cluster.local:30950/user-01/lingua-greeter.git .
+      - git checkout $DRONE_COMMIT
+  # Step 2
+  - name: ensure nexus is available
+    image: alpine
+    pull: if-not-exists
+    commands:
+      - apk update
+      - apk add curl bash
+      - until [ "$(curl -o /dev/null -s -w '%{http_code}' http://nexus.infra:8081/repository/maven-public/ )" -eq 200 ]; do sleep 5;echo "."; done
+    environment:
+      MAVEN_MIRROR_URL:
+        from_secret: maven_mirror_url
+  # Step 3
+  - name: java-build
+    image: kameshsampath/drone-java-maven-plugin:v1.0.3
+    pull: if-not-exists
+    settings:
+      maven_mirror_url:
+        from_secret: maven_mirror_url
+      goals:
+        - -DskipTests
+        - clean
+        - install
+  # Step 4
+  - name: publish
+    image: plugins/docker:20.13
+    pull: if-not-exists
+    settings:
+      tags: "latest"
+      dockerfile: Dockerfile
+      insecure: true
+      mtu: 1400
+      username:
+        from_secret: image_registry_user
+      password:
+        from_secret: image_registry_password
+      registry:
+        from_secret: image_registry
+      repo:
+        from_secret: destination_image
+  # Step 4
+  - name: deploy to k8s
+    image: kameshsampath/kube-dev-tools:v0.0.8
+    pull: if-not-exists
+    commands:
+      - mkdir -p /app/.kube
+      - echo -n "$KUBECONFIG_CONTENT" | base64 -d -w0 | yq . - > /app/.kube/config
+      - echo -n "$GOOGLE_APPLICATION_CREDENTIALS" | base64 -d -w0 | jq . > /app/sa.json
+      - chmod 0700 /app/.kube/config /app/sa.json
+      - cat /app/.kube/config
+      - export KUBECONFIG=/app/.kube/config
+      - kubectl create ns my-apps ||
+      - kubectl create secret generic -n my-apps google-cloud-creds --from-file="google-cloud-credentials.json=/app/sa.json" || true
+      - helm repo add bitnami https://charts.bitnami.com/bitnami
+      - helm repo update
+      - helm upgrade --install my-kafka bitnami/kafka -n my-apps
+      - kubectl apply -k k8s/app
+      - kubectl rollout status deploy/lingua-greeter -n my-apps --timeout=30s
+    environment:
+      KUBECONFIG_CONTENT:
+        from_secret: kubeconfig_content
+      GOOGLE_APPLICATION_CREDENTIALS:
+        from_secret: google_application_credentials
