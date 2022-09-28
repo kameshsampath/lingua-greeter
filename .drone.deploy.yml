@@ -7,7 +7,7 @@ platform:
   arch: arm64
 trigger:
   branch:
-    - demo
+    - main
 clone:
   disable: true
 
